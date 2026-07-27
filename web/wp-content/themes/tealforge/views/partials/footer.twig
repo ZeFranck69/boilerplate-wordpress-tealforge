@@ -1,0 +1,10 @@
+<footer class="tf-site-footer">
+    <div class="tf-site-footer__inner tf-container">
+        <p>&copy; {{ 'now'|date('Y') }} {{ site.name }}</p>
+
+        {% include 'components/menu.twig' with {
+            menu: menus.footer,
+            class_name: 'tf-menu tf-menu--footer'
+        } only %}
+    </div>
+</footer>

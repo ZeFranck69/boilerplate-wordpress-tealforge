@@ -1,0 +1,13 @@
+{
+  "name": "tealforge-theme",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^8.1.5"
+  }
+}

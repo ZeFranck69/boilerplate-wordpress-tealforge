@@ -1,0 +1,22 @@
+<header class="tf-site-header">
+    <div class="tf-site-header__inner tf-container">
+        <a class="tf-site-header__brand" href="{{ function('esc_url', site.url) }}">
+            {{ site.name }}
+        </a>
+
+        <button
+            class="tf-site-header__toggle"
+            type="button"
+            aria-label="{{ function('__', 'Ouvrir le menu', 'tealforge') }}"
+            aria-expanded="false"
+            data-tf-menu-toggle
+        >
+            <span class="tf-site-header__toggle-lines" aria-hidden="true"></span>
+        </button>
+
+        {% include 'components/menu.twig' with {
+            menu: menus.primary,
+            class_name: 'tf-menu'
+        } only %}
+    </div>
+</header>

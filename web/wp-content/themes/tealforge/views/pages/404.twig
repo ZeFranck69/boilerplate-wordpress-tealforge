@@ -1,0 +1,17 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+    <section class="tf-page-hero">
+        <div class="tf-page-hero__inner">
+            <h1 class="tf-page-hero__title">{{ function('__', 'Page introuvable', 'tealforge') }}</h1>
+            <p class="tf-page-hero__text">
+                {{ function('__', 'La page demandee n existe pas ou a ete deplacee.', 'tealforge') }}
+            </p>
+            <p>
+                <a class="tf-button" href="{{ function('esc_url', site.url) }}">
+                    {{ function('__', 'Retour a l accueil', 'tealforge') }}
+                </a>
+            </p>
+        </div>
+    </section>
+{% endblock %}

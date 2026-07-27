@@ -1,0 +1,12 @@
+{
+  "name": "tealforge/wordpress-theme",
+  "description": "Theme WordPress Tealforge base sur Timber et Twig.",
+  "type": "wordpress-theme",
+  "require": {
+    "php": ">=8.2",
+    "timber/timber": "^2.3"
+  },
+  "config": {
+    "allow-plugins": {}
+  }
+}

@@ -1,0 +1,23 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+    <section class="tf-content">
+        <div class="tf-content__inner">
+            {% if posts %}
+                {% for post in posts %}
+                    <article class="tf-entry">
+                        <h1>
+                            <a href="{{ function('esc_url', post.link) }}">{{ post.title }}</a>
+                        </h1>
+
+                        <div class="tf-entry__excerpt">
+                            {{ post.preview.length(32).read_more(false) }}
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p>{{ function('__', 'Aucun contenu pour le moment.', 'tealforge') }}</p>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

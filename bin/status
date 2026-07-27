@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+THEME_DIR="${THEME_DIR:-web/wp-content/themes/tealforge}"
+
+echo "== Git =="
+git status --short --branch
+echo
+
+echo "== Remote =="
+git remote -v
+echo
+
+echo "== DDEV =="
+if command -v ddev >/dev/null 2>&1; then
+  if ddev describe >/dev/null 2>&1; then
+    ddev describe
+  else
+    echo "DDEV installe, mais projet non demarre."
+  fi
+else
+  echo "DDEV introuvable."
+fi
+echo
+
+echo "== Theme =="
+if [ -d "$THEME_DIR" ]; then
+  echo "Theme trouve : $THEME_DIR"
+
+  if [ -f "$THEME_DIR/composer.json" ]; then
+    echo "Composer : composer.json present"
+  fi
+
+  if [ -d "$THEME_DIR/vendor" ]; then
+    echo "Composer : vendor present"
+  else
+    echo "Composer : vendor absent"
+  fi
+
+  if [ -f "$THEME_DIR/package.json" ]; then
+    echo "npm : package.json present"
+  fi
+
+  if [ -d "$THEME_DIR/node_modules" ]; then
+    echo "npm : node_modules present"
+  else
+    echo "npm : node_modules absent"
+  fi
+
+  if [ -f "$THEME_DIR/dist/manifest.json" ]; then
+    echo "Build : dist/manifest.json present"
+  else
+    echo "Build : dist/manifest.json absent"
+  fi
+else
+  echo "Theme introuvable : $THEME_DIR"
+fi

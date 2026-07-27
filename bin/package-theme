@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+THEME_SLUG="${THEME_SLUG:-tealforge}"
+THEME_PARENT="${THEME_PARENT:-web/wp-content/themes}"
+THEME_DIR="$THEME_PARENT/$THEME_SLUG"
+ARCHIVE_DIR="${ARCHIVE_DIR:-tmp/deploy}"
+ARCHIVE_PATH="$ARCHIVE_DIR/$THEME_SLUG-theme.tar.gz"
+
+if [ ! -d "$THEME_DIR" ]; then
+  echo "Theme introuvable: $THEME_DIR"
+  exit 1
+fi
+
+mkdir -p "$ARCHIVE_DIR"
+
+COPYFILE_DISABLE=1 tar \
+  --exclude='node_modules' \
+  --exclude='.git' \
+  --exclude='.DS_Store' \
+  --exclude='._*' \
+  -czf "$ARCHIVE_PATH" \
+  -C "$THEME_PARENT" "$THEME_SLUG"
+
+echo "$ARCHIVE_PATH"
+

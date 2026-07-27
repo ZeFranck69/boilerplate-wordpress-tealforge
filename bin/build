@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+THEME_DIR="${THEME_DIR:-web/wp-content/themes/tealforge}"
+
+if [ ! -d "$THEME_DIR" ]; then
+  echo "Theme introuvable: $THEME_DIR"
+  exit 1
+fi
+
+if ! command -v ddev >/dev/null 2>&1; then
+  echo "DDEV est introuvable. Installez DDEV avant de lancer le build."
+  exit 1
+fi
+
+if ! ddev describe >/dev/null 2>&1; then
+  echo "DDEV ne semble pas demarre pour ce projet. Lancez ddev start."
+  exit 1
+fi
+
+if [ ! -d "$THEME_DIR/node_modules" ]; then
+  echo "Dependances npm absentes. Lancez :"
+  echo "ddev npm --prefix /var/www/html/$THEME_DIR install"
+  exit 1
+fi
+
+ddev exec npm --prefix "/var/www/html/$THEME_DIR" run build
+chmod -R u+rwX,go+rX "$THEME_DIR/dist"

@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+THEME_SLUG="${THEME_SLUG:-tealforge}"
+DEPLOY_HOST="${DEPLOY_HOST:-}"
+DEPLOY_PORT="${DEPLOY_PORT:-22}"
+DEPLOY_USER="${DEPLOY_USER:-}"
+DEPLOY_WP_PATH="${DEPLOY_WP_PATH:-}"
+ARCHIVE_PATH="${ARCHIVE_PATH:-tmp/deploy/$THEME_SLUG-theme.tar.gz}"
+
+bin/package-theme >/dev/null
+
+cat <<INTRO
+Ce script prepare l'archive et affiche les commandes de deploiement.
+Il ne se connecte pas au serveur et ne modifie pas la production.
+
+Archive locale :
+  $ARCHIVE_PATH
+
+INTRO
+
+if [ -z "$DEPLOY_HOST" ] || [ -z "$DEPLOY_USER" ] || [ -z "$DEPLOY_WP_PATH" ]; then
+  cat <<'MISSING'
+Variables a renseigner pour obtenir les commandes completes :
+
+  DEPLOY_HOST="host.example.com"
+  DEPLOY_PORT="22"
+  DEPLOY_USER="user"
+  DEPLOY_WP_PATH="/home/user/public_html"
+
+Exemple :
+
+  DEPLOY_HOST="host.example.com" DEPLOY_PORT="22" DEPLOY_USER="user" DEPLOY_WP_PATH="/home/user/public_html" bin/deploy-theme
+MISSING
+
+  exit 0
+fi
+
+cat <<COMMANDS
+1. Envoyer l'archive :
+
+scp -P "$DEPLOY_PORT" "$ARCHIVE_PATH" "$DEPLOY_USER@$DEPLOY_HOST:/home/$DEPLOY_USER/"
+
+2. Se connecter au serveur :
+
+ssh -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST"
+
+3. Remplacer le theme cote serveur apres backup :
+
+cd "$DEPLOY_WP_PATH/wp-content/themes"
+rm -rf "$THEME_SLUG-new"
+mkdir "$THEME_SLUG-new"
+tar -xzf "/home/$DEPLOY_USER/$THEME_SLUG-theme.tar.gz" -C "$THEME_SLUG-new" --strip-components=1
+find "$THEME_SLUG-new" -type d -exec chmod 755 {} \;
+find "$THEME_SLUG-new" -type f -exec chmod 644 {} \;
+mv "$THEME_SLUG" "$THEME_SLUG-backup-temp"
+mv "$THEME_SLUG-new" "$THEME_SLUG"
+rm -rf "$THEME_SLUG-backup-temp"
+cd "$DEPLOY_WP_PATH"
+wp theme activate "$THEME_SLUG"
+wp cache flush
+
+4. Verifier ensuite :
+
+$DEPLOY_WP_PATH/wp-content/themes/$THEME_SLUG/dist/manifest.json
+COMMANDS

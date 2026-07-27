@@ -1,0 +1,17 @@
+{% extends 'layouts/base.twig' %}
+
+{% block content %}
+    <section class="tf-page-hero">
+        <div class="tf-page-hero__inner">
+            <h1 class="tf-page-hero__title">
+                {{ post.title ?: site.name }}
+            </h1>
+
+            {% if post.content %}
+                <div class="tf-page-hero__text">
+                    {{ post.content }}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}

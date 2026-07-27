@@ -1,0 +1,13 @@
+{% if menu and menu.items %}
+    <nav class="{{ class_name }}" data-tf-menu-panel aria-label="{{ function('__', 'Navigation', 'tealforge') }}">
+        <ul class="tf-menu__list">
+            {% for item in menu.items %}
+                <li class="tf-menu__item">
+                    <a class="tf-menu__link" href="{{ function('esc_url', item.link) }}">
+                        {{ item.title }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endif %}

@@ -1,0 +1,119 @@
+# PROJECT.md — Nom du projet
+
+## 1. Présentation
+
+- Client :
+- Objectif du site :
+- Type de site :
+- Date de démarrage :
+
+## 2. Environnements
+
+- Local :
+  - URL :
+  - Nom DDEV :
+- Développement :
+  - URL :
+  - Hébergeur :
+  - Chemin WordPress :
+- Production :
+  - URL :
+  - Hébergeur :
+  - Chemin WordPress :
+
+## 3. Stack retenue
+
+- WordPress :
+- PHP :
+- MySQL/MariaDB :
+- DDEV :
+- Thème custom : tealforge
+- Templating : Timber 2 / Twig
+- Champs : ACF Pro
+- Formulaires : WPForms
+- Build front-end : Vite
+
+## 4. Plugins WordPress
+
+Plugins de socle :
+
+- [ ] ACF Pro
+- [ ] WPForms
+- [ ] WPvivid
+- [ ] WP-Optimize
+- [ ] Plugin de maintenance :
+- [ ] All-In-One Security / AIOS
+
+Plugins spécifiques projet :
+
+- [ ] À définir
+
+Licences ou comptes à demander au client, sans stocker de secret ici :
+
+- ACF Pro :
+- WPForms :
+- Autres :
+
+Réglages sensibles à documenter :
+
+- Cache :
+- Sécurité :
+- SMTP :
+- Sauvegardes :
+
+## 5. Conventions projet
+
+- Slug du thème : tealforge
+- Préfixe CSS : tf-
+- Champs ACF principaux : page_sections
+- Menus WordPress :
+- CPT prévus :
+- Taxonomies prévues :
+- Templates spécifiques :
+
+## 6. Contenus et données
+
+- Source de vérité du contenu :
+- Migration BDD :
+  - Sens recommandé :
+  - Outil :
+  - Dernier import local :
+- Médias :
+- Données externes/API :
+- Données de test nécessaires :
+- Données à ne jamais écraser :
+
+## 7. Déploiement
+
+- Hébergeur :
+- Accès SSH :
+- Chemin WordPress distant :
+- Variables locales de déploiement : `deploy.local.env`
+- Commande ou méthode de déploiement :
+- Points de vérification après déploiement :
+- Procédure de backup avant déploiement :
+
+## 8. Workflow projet
+
+- Qui installe WordPress :
+- Qui installe les plugins tiers :
+- Qui importe la BDD :
+- Qui déploie le thème :
+- Qui valide visuellement :
+- Environnement source de vérité pour le contenu :
+
+## 9. Points de vigilance
+
+- Contraintes client :
+- Plugins sensibles :
+- Sécurité :
+- Cache :
+- REST API / admin-ajax :
+- ACF JSON :
+- WPForms :
+- Permissions fichiers :
+- Notes techniques :
+
+## 10. Historique des décisions
+
+- YYYY-MM-DD :
