@@ -15,6 +15,66 @@ Timber/Twig, ACF JSON, WPForms, Vite, scripts de workflow et déploiement SSH.
 PHP, Composer, Node et WP-CLI doivent être utilisés via DDEV, pas supposés
 installés directement sur la machine.
 
+## Installation des prérequis
+
+Sur macOS, installer d'abord :
+
+1. Git ;
+2. Docker Desktop ou un autre provider Docker compatible DDEV ;
+3. Homebrew ;
+4. DDEV.
+
+### Docker Desktop
+
+Installer Docker Desktop depuis la documentation officielle :
+
+```text
+https://docs.docker.com/desktop/setup/install/mac-install/
+```
+
+Après installation, ouvrir Docker Desktop au moins une fois et vérifier qu'il est
+démarré.
+
+Vérification :
+
+```bash
+docker --version
+docker ps
+```
+
+Si `docker ps` retourne une erreur, Docker Desktop n'est probablement pas lancé.
+
+### DDEV
+
+La méthode recommandée sur macOS est Homebrew :
+
+```bash
+brew install ddev/ddev/ddev
+mkcert -install
+```
+
+Documentation officielle :
+
+```text
+https://ddev.github.io/ddev/en/stable/users/install/ddev-installation/
+```
+
+Vérification :
+
+```bash
+ddev version
+```
+
+Notes :
+
+- DDEV a besoin d'un provider Docker fonctionnel avant de démarrer un projet ;
+- Docker Desktop n'est pas la seule option possible, mais c'est l'option la plus
+  simple à documenter pour le workflow Tealforge ;
+- les alternatives Docker compatibles DDEV sont documentées ici :
+  `https://ddev.github.io/ddev/en/stable/users/install/docker-installation/` ;
+- si un autre outil utilise déjà les ports `80` ou `443`, `ddev start` peut
+  échouer et il faudra libérer ces ports ou adapter la configuration DDEV.
+
 ## Démarrage d'un projet
 
 Créer d'abord un dépôt GitHub vide pour le projet, sans README ni commit initial,
