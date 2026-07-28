@@ -23,11 +23,20 @@ les plugins tiers, les imports de base de donnees et les deploiements.
 - [ ] Telecharger WordPress avec `--skip-content`.
 - [ ] Creer `wp-config.php`.
 - [ ] Installer WordPress localement.
-- [ ] Activer le theme `tealforge`.
 - [ ] Configurer les permaliens en `/%postname%/`.
 - [ ] Verifier que l'accueil repond en local.
 
-## 3. Plugins de socle
+## 3. Theme
+
+- [ ] Installer les dependances Composer du theme.
+- [ ] Installer les dependances npm du theme.
+- [ ] Lancer `bin/build`.
+- [ ] Activer le theme `tealforge`.
+- [ ] Verifier que `dist/manifest.json` existe.
+- [ ] Verifier que les permissions du dossier `dist` sont correctes.
+- [ ] Verifier que la page 404 existe.
+
+## 4. Plugins de socle
 
 - [ ] Installer ACF Pro.
 - [ ] Installer WPForms.
@@ -38,7 +47,7 @@ les plugins tiers, les imports de base de donnees et les deploiements.
 - [ ] Activer les reglages de securite et cache progressivement.
 - [ ] Verifier REST API, admin-ajax, Gutenberg, ACF et WPForms apres reglages.
 
-## 4. Alignement BDD locale
+## 5. Alignement BDD locale
 
 - [ ] Installer WPvivid en local.
 - [ ] Installer WPvivid sur le dev/prod.
@@ -48,15 +57,6 @@ les plugins tiers, les imports de base de donnees et les deploiements.
 - [ ] Verifier les utilisateurs WordPress.
 - [ ] Verifier les pages, menus, options, ACF et formulaires.
 - [ ] Vider les caches.
-
-## 5. Theme
-
-- [ ] Installer les dependances Composer du theme.
-- [ ] Installer les dependances npm du theme.
-- [ ] Lancer `bin/build`.
-- [ ] Verifier que `dist/manifest.json` existe.
-- [ ] Verifier que les permissions du dossier `dist` sont correctes.
-- [ ] Verifier que la page 404 existe.
 
 ## 6. ACF et contenus
 

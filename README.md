@@ -33,9 +33,9 @@ Pour un nouveau projet, le principe est toujours le même :
 4. adapter `PROJECT.md` et `.ddev/config.yaml` ;
 5. pousser le socle dans le dépôt projet ;
 6. installer WordPress localement dans `web/` ;
-7. installer les plugins obligatoires ;
-8. si un dev/prod existe déjà, importer sa BDD vers le local avec WPvivid ;
-9. installer les dépendances du thème et lancer le build ;
+7. installer les dépendances du thème, lancer le build et activer le thème ;
+8. installer les plugins obligatoires ;
+9. si un dev/prod existe déjà, importer sa BDD vers le local avec WPvivid ;
 10. commencer le développement du thème.
 
 Commandes principales du lancement projet :
@@ -58,6 +58,10 @@ PROJECT.md
 .ddev/config.yaml
 ```
 
+`PROJECT.md.example` contient des exemples de saisie. Le copier vers
+`PROJECT.md`, remplacer `NOM_PROJET`, compléter les sections utiles, puis
+supprimer les exemples qui ne s'appliquent pas.
+
 Dans `.ddev/config.yaml`, remplacer le nom DDEV :
 
 ```yaml
@@ -76,23 +80,11 @@ bin/push
 
 Installer ensuite WordPress localement :
 
-```bash
-ddev start
-ddev wp core download --path=/var/www/html/web --locale=fr_FR --skip-content
-ddev wp config create --path=/var/www/html/web --dbname=db --dbuser=db --dbpass=db --dbhost=db
-ddev wp core install --path=/var/www/html/web --url=https://NOM_PROJET.ddev.site --title="NOM_PROJET" --admin_user=tf-admin --admin_password='CHANGE_ME_LOCAL_ONLY' --admin_email=dev@tealforge.local --skip-email
-ddev wp theme activate tealforge --path=/var/www/html/web
-ddev wp rewrite structure '/%postname%/' --path=/var/www/html/web
-ddev wp rewrite flush --path=/var/www/html/web
-```
+Voir la section **Installation WordPress locale** plus bas.
 
 Installer les dépendances du thème :
 
-```bash
-ddev composer --working-dir=/var/www/html/web/wp-content/themes/tealforge install
-ddev npm --prefix /var/www/html/web/wp-content/themes/tealforge install
-bin/build
-```
+Voir la section **Installation des dépendances du thème** plus bas.
 
 Au quotidien :
 
@@ -187,12 +179,6 @@ ddev wp core install \
 Les identifiants ci-dessus sont des valeurs locales temporaires. Les adapter au
 projet et ne jamais les utiliser en développement distant ou production.
 
-Activer le thème lorsque `web/wp-content/themes/tealforge` est présent :
-
-```bash
-ddev wp theme activate tealforge --path=/var/www/html/web
-```
-
 Configurer les permaliens :
 
 ```bash
@@ -206,12 +192,47 @@ Notes :
 - `--skip-content` permet de conserver le `wp-content` déjà présent dans le
   boilerplate ;
 - si WordPress est déjà installé, ne pas relancer les commandes `core install` ;
+- ne pas activer le thème avant d'avoir installé ses dépendances Composer ;
 - les plugins tiers sont installés et configurés manuellement selon le projet.
+
+## Installation des dépendances du thème
+
+Cette étape est exécutée par l'utilisateur juste après l'installation WordPress
+locale, avant l'activation du thème et avant l'installation des plugins.
+
+Installer Timber et les dépendances Composer du thème :
+
+```bash
+ddev composer --working-dir=/var/www/html/web/wp-content/themes/tealforge install
+```
+
+Installer les dépendances front-end du thème :
+
+```bash
+ddev npm --prefix /var/www/html/web/wp-content/themes/tealforge install
+```
+
+Construire les assets :
+
+```bash
+bin/build
+```
+
+Activer ensuite le thème :
+
+```bash
+ddev wp theme activate tealforge --path=/var/www/html/web
+```
+
+Les dossiers `vendor` et `node_modules` ne sont pas versionnés. Les fichiers de
+verrouillage `composer.lock` et `package-lock.json` doivent être versionnés dès
+qu'ils existent.
 
 ## Plugins WordPress obligatoires
 
-Après l'installation de WordPress, installer les plugins de socle suivants depuis
-l'administration WordPress ou via le processus validé pour le projet.
+Après l'installation de WordPress, des dépendances du thème et l'activation du
+thème, installer les plugins de socle suivants depuis l'administration WordPress
+ou via le processus validé pour le projet.
 
 Plugins obligatoires par défaut :
 
@@ -256,32 +277,6 @@ Workflow recommandé :
 
 Ne jamais écraser une base dev/prod depuis le local sans validation explicite.
 La base de données et les médias ne sont pas versionnés dans Git.
-
-## Installation des dépendances du thème
-
-Cette étape est exécutée par l'utilisateur après l'installation WordPress locale.
-
-Installer Timber et les dépendances Composer du thème :
-
-```bash
-ddev composer --working-dir=/var/www/html/web/wp-content/themes/tealforge install
-```
-
-Installer les dépendances front-end du thème :
-
-```bash
-ddev npm --prefix /var/www/html/web/wp-content/themes/tealforge install
-```
-
-Construire les assets :
-
-```bash
-bin/build
-```
-
-Les dossiers `vendor` et `node_modules` ne sont pas versionnés. Les fichiers de
-verrouillage `composer.lock` et `package-lock.json` doivent être versionnés dès
-qu'ils existent.
 
 ## Structure cible
 
