@@ -353,6 +353,19 @@ La base de données et les médias ne sont pas versionnés dans Git.
             └── tealforge/
 ```
 
+Dans le theme, les dossiers suivants sont prevus pour les evolutions :
+
+```text
+web/wp-content/themes/tealforge/
+├── inc/
+├── views/
+└── assets/
+    ├── styles/
+    │   └── sections/
+    └── scripts/
+        └── sections/
+```
+
 ## Ce qui est versionné
 
 Le repo projet contient le code et les fichiers de workflow :
@@ -410,6 +423,18 @@ La checklist complete de lancement projet est disponible ici :
 
 ```text
 docs/checklists/nouveau-projet.md
+```
+
+La documentation d'architecture du theme est disponible ici :
+
+```text
+docs/architecture-theme.md
+```
+
+Le guide de creation d'une section est disponible ici :
+
+```text
+docs/creer-section.md
 ```
 
 La documentation de depannage est disponible ici :
@@ -480,6 +505,39 @@ Après déploiement :
 2. supprimer les fichiers `._*` ;
 3. synchroniser/importer les groupes ACF dans l'admin ;
 4. ne pas sauvegarder une page si des champs attendus manquent.
+
+## Architecture du theme
+
+Le theme garde `functions.php` comme point d'entree, mais les responsabilites
+sont separees dans `inc/` :
+
+```text
+web/wp-content/themes/tealforge/inc/
+├── setup.php
+├── assets.php
+├── timber.php
+└── helpers.php
+```
+
+Cette structure reprend l'idee d'une separation claire du boilerplate Eltigre,
+mais en version plus legere et adaptee a Timber 2, Vite et DDEV.
+
+Regle de base :
+
+- les fichiers PHP d'entree preparent le contexte ;
+- `inc/` contient les fonctions techniques du theme ;
+- Twig affiche le HTML ;
+- ACF definit les champs administrables ;
+- CSS et JavaScript restent dans `assets/`.
+
+Si le projet grandit, ajouter seulement les modules utiles :
+
+```text
+inc/acf.php
+inc/post-types.php
+inc/admin.php
+inc/ajax.php
+```
 
 ## Déploiement thème
 

@@ -304,6 +304,12 @@ Règles :
 Organisation cible :
 
 ```text
+inc/
+├── setup.php
+├── assets.php
+├── timber.php
+└── helpers.php
+
 views/
 ├── components/
 ├── layouts/
@@ -464,6 +470,23 @@ Règles générales :
 - ne pas ajouter de fonction globale générique susceptible d'entrer en conflit ;
 - utiliser le préfixe `tealforge_` pour les fonctions globales inévitables ;
 - privilégier des classes et namespaces pour les fonctionnalités structurées.
+
+`functions.php` doit rester un point d'entrée léger. Les responsabilités du thème
+doivent être déplacées dans `inc/` dès qu'elles dépassent quelques lignes :
+
+```text
+inc/setup.php
+inc/assets.php
+inc/timber.php
+inc/helpers.php
+inc/acf.php
+inc/post-types.php
+inc/admin.php
+inc/ajax.php
+```
+
+Créer uniquement les modules nécessaires au projet. Ne pas ajouter une structure
+complexe par anticipation.
 
 Les intégrations métier externes doivent être placées dans un plugin custom projet
 lorsqu'elles dépassent le simple rendu du thème. Ces plugins sont développés dans
