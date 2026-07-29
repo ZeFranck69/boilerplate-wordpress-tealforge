@@ -26,6 +26,22 @@ const initMobileNavigation = () => {
   });
 };
 
+const initHistoryBackButtons = () => {
+  const buttons = document.querySelectorAll('[data-tf-history-back]');
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (window.history.length > 1) {
+        window.history.back();
+        return;
+      }
+
+      window.location.href = '/';
+    });
+  });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   initMobileNavigation();
+  initHistoryBackButtons();
 });
