@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [ -f "deploy.local.env" ]; then
+  # shellcheck source=/dev/null
+  . "deploy.local.env"
+fi
+
 THEME_SLUG="${THEME_SLUG:-tealforge}"
 DEPLOY_HOST="${DEPLOY_HOST:-}"
 DEPLOY_PORT="${DEPLOY_PORT:-22}"
@@ -53,7 +58,9 @@ mkdir "$THEME_SLUG-new"
 tar -xzf "/home/$DEPLOY_USER/$THEME_SLUG-theme.tar.gz" -C "$THEME_SLUG-new" --strip-components=1
 find "$THEME_SLUG-new" -type d -exec chmod 755 {} \;
 find "$THEME_SLUG-new" -type f -exec chmod 644 {} \;
-mv "$THEME_SLUG" "$THEME_SLUG-backup-temp"
+if [ -d "$THEME_SLUG" ]; then
+  mv "$THEME_SLUG" "$THEME_SLUG-backup-temp"
+fi
 mv "$THEME_SLUG-new" "$THEME_SLUG"
 rm -rf "$THEME_SLUG-backup-temp"
 cd "$DEPLOY_WP_PATH"

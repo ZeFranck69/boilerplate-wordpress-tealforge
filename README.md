@@ -261,7 +261,75 @@ commit.
 Le dossier `dist` du theme doit rester versionne pour permettre un deploiement
 sans Node.js sur le serveur.
 
-## 6. Push en dev/prod
+## 6. Acces SSH cPanel
+
+Pour un deploiement SSH via cPanel, creer de preference la cle SSH sur le poste
+local, puis importer uniquement la cle publique dans cPanel.
+
+Creer une cle dediee au projet :
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_NOM_PROJET
+```
+
+Afficher la cle publique a coller dans cPanel :
+
+```bash
+cat ~/.ssh/id_ed25519_NOM_PROJET.pub
+```
+
+Dans cPanel :
+
+```text
+Acces SSH > Gerer les cles SSH > Importer une cle
+```
+
+![Import de cle SSH dans cPanel](docs/images/cpanel-import-cle-ssh.png)
+
+Remplir les champs ainsi :
+
+```text
+Attribuez un nom a cette cle :
+id_ed25519_NOM_PROJET
+
+Collez la cle privee :
+laisser vide
+
+Phrase secrete :
+laisser vide
+
+Collez la cle publique :
+coller le contenu de ~/.ssh/id_ed25519_NOM_PROJET.pub
+```
+
+Apres l'import, revenir dans la liste des cles SSH et cliquer sur :
+
+```text
+Gerer > Autoriser
+```
+
+Tester ensuite la connexion :
+
+```bash
+ssh -i ~/.ssh/id_ed25519_NOM_PROJET -p PORT USER@HOST
+```
+
+Chaque developpeur doit avoir sa propre cle SSH. Ne jamais partager une cle
+privee.
+
+### Mot de passe demande en SSH
+
+Il y a deux cas possibles :
+
+- si le terminal demande `Enter passphrase for key`, saisir la phrase secrete de
+  la cle SSH creee sur le poste local ;
+- si le terminal demande `USER@HOST's password`, saisir le mot de passe du compte
+  cPanel/FTP/SSH fourni par l'hebergeur.
+
+Si la connexion demande toujours le mot de passe cPanel alors qu'une cle SSH est
+prevue, verifier que la cle publique est bien importee puis autorisee dans cPanel.
+
+## 7. Push en dev/prod
 
 Le serveur distant ne doit pas etre la source du code.
 
@@ -297,12 +365,19 @@ DEPLOY_WP_PATH="/chemin/vers/wordpress"
 Afficher les commandes de deploiement :
 
 ```bash
-source deploy.local.env
 bin/deploy-theme
 ```
 
-Le script `bin/deploy-theme` ne se connecte pas au serveur. Il affiche les
-commandes `scp`, `ssh` et les commandes serveur a executer.
+Le script `bin/deploy-theme` lit automatiquement `deploy.local.env` s'il existe.
+Il ne se connecte pas au serveur. Il affiche les commandes `scp`, `ssh` et les
+commandes serveur a executer.
+
+Suivre les instructions affichees dans le terminal, dans l'ordre :
+
+1. envoyer l'archive avec la commande `scp` affichee ;
+2. se connecter au serveur avec la commande `ssh` affichee ;
+3. executer les commandes serveur affichees pour installer ou remplacer le theme ;
+4. verifier le `manifest.json` et vider les caches.
 
 Ne jamais envoyer automatiquement :
 
@@ -324,7 +399,7 @@ Apres deploiement :
 - vider les caches ;
 - synchroniser/importer les ACF JSON si necessaire.
 
-## 7. Documentation utile
+## 8. Documentation utile
 
 ```text
 docs/checklists/nouveau-projet.md
