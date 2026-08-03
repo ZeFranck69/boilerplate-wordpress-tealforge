@@ -89,6 +89,11 @@ Travailler uniquement sur la tâche explicitement demandée.
 Le développement doit avancer section par section à partir d'une maquette, d'une
 capture ou d'une demande validée.
 
+Toujours créer une page WordPress pour porter le contenu, même lorsqu'il s'agit
+d'une onepage. Le rendu doit être construit avec des sections administrables,
+principalement via ACF Flexible Content, et non comme une page statique codée en
+dur dans un template.
+
 Pour chaque tâche :
 
 1. analyser uniquement les fichiers utiles ;
@@ -324,6 +329,11 @@ views/
 
 Les pages sont construites progressivement avec des sections ACF Flexible Content.
 
+Cette règle s'applique aussi aux onepages : créer une page WordPress, puis
+composer son contenu avec le Flexible Content principal. Ne pas coder directement
+toute une onepage dans `front-page.php`, `page.php` ou un template Twig sans
+champs administrables, sauf validation explicite.
+
 Champ principal recommandé :
 
 ```text
@@ -331,6 +341,23 @@ page_sections
 ```
 
 Si un projet utilise un autre nom, l'indiquer dans `PROJECT.md`.
+
+### Création d'une page one-page ACF
+
+Quand une demande concerne l'intégration d'une page one-page administrable avec
+ACF :
+
+1. vérifier le dossier projet courant et le nom DDEV avant toute modification ;
+2. créer la page WordPress si elle n'existe pas ;
+3. définir cette page comme page d'accueil statique si la demande concerne
+   l'accueil ;
+4. créer ou synchroniser le groupe ACF JSON ;
+5. insérer les sections Flexible Content dans la page, pas seulement prévoir les
+   champs ;
+6. vérifier dans WordPress que `get_field('page_sections', ID_PAGE)` retourne les
+   layouts attendus ;
+7. vérifier que l'URL publique affiche la page et que l'admin peut sauvegarder
+   sans erreur REST JSON.
 
 Règles ACF :
 
@@ -363,6 +390,23 @@ Après un déploiement qui modifie `acf-json` :
 3. supprimer les fichiers parasites `._*` ;
 4. synchroniser ou importer les groupes ACF avant d'éditer les pages ;
 5. ne jamais sauvegarder une page si des champs ACF attendus sont manquants.
+
+### Création d'une page one-page ACF
+
+Quand une demande concerne l'intégration d'une page one-page administrable avec
+ACF :
+
+1. vérifier le dossier projet courant et le nom DDEV avant toute modification ;
+2. créer la page WordPress si elle n'existe pas ;
+3. définir cette page comme page d'accueil statique si la demande concerne
+   l'accueil ;
+4. créer ou synchroniser le groupe ACF JSON ;
+5. insérer les sections Flexible Content dans la page, pas seulement prévoir les
+   champs ;
+6. vérifier dans WordPress que `get_field('page_sections', ID_PAGE)` retourne les
+   layouts attendus ;
+7. vérifier que l'URL publique affiche la page et que l'admin peut sauvegarder
+   sans erreur REST JSON.
 
 ---
 
