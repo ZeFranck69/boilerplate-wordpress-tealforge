@@ -187,7 +187,35 @@ Sens recommande :
 dev/prod -> local
 ```
 
-## 4. Structure du projet
+## 4. Synchronisation ACF apres deploiement
+
+Les definitions ACF versionnees dans `acf-json` ne mettent pas automatiquement la
+base de donnees distante a jour. Apres un deploiement qui ajoute ou modifie des
+champs ACF, verifier puis synchroniser les JSON avant d'editer les pages.
+
+Commandes WP-CLI recommandees sur le serveur :
+
+```bash
+wp acf json status
+wp acf json sync --dry-run
+wp acf json sync
+wp rewrite flush --hard
+wp cache flush
+```
+
+Si seuls certains types sont concernes, limiter la synchronisation :
+
+```bash
+wp acf json sync --type=field-group
+wp acf json sync --type=post-type
+wp acf json sync --type=taxonomy
+```
+
+Si des CPT ou taxonomies ont ete ajoutes ou modifies, relancer les regles de
+reecriture avec `wp rewrite flush --hard`. Ne pas sauvegarder une page tant que
+les champs ACF attendus ne sont pas visibles dans l'admin.
+
+## 5. Structure du projet
 
 Structure principale :
 
@@ -218,7 +246,7 @@ web/wp-content/themes/tealforge/
 └── style.css
 ```
 
-## 5. Commandes build et Git
+## 6. Commandes build et Git
 
 Voir l'etat du projet :
 

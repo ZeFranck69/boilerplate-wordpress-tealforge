@@ -388,8 +388,30 @@ Après un déploiement qui modifie `acf-json` :
 1. vérifier la présence des fichiers JSON sur le serveur ;
 2. vérifier leurs permissions (`644` pour les fichiers, `755` pour les dossiers) ;
 3. supprimer les fichiers parasites `._*` ;
-4. synchroniser ou importer les groupes ACF avant d'éditer les pages ;
-5. ne jamais sauvegarder une page si des champs ACF attendus sont manquants.
+4. vérifier l'état de synchronisation avec `wp acf json status` ;
+5. prévisualiser la synchronisation avec `wp acf json sync --dry-run` ;
+6. synchroniser ou importer les groupes ACF avant d'éditer les pages ;
+7. si des CPT ou taxonomies ACF ont été ajoutés, synchroniser aussi les types
+   concernés puis relancer les règles de réécriture ;
+8. ne jamais sauvegarder une page si des champs ACF attendus sont manquants.
+
+Commandes serveur recommandées après déploiement de JSON ACF :
+
+```bash
+wp acf json status
+wp acf json sync --dry-run
+wp acf json sync
+wp rewrite flush --hard
+wp cache flush
+```
+
+Lorsque seul un type précis est concerné, limiter la synchronisation :
+
+```bash
+wp acf json sync --type=field-group
+wp acf json sync --type=post-type
+wp acf json sync --type=taxonomy
+```
 
 ### Création d'une page one-page ACF
 
@@ -798,8 +820,10 @@ Déploiement thème recommandé lorsque `rsync` n'est pas disponible :
 5. appliquer les permissions `755` pour les dossiers et `644` pour les fichiers ;
 6. remplacer le dossier actif en conservant le slug attendu ;
 7. réactiver le thème ;
-8. vider les caches ;
-9. vérifier `dist/manifest.json`.
+8. synchroniser les JSON ACF si des champs, CPT ou taxonomies ont changé ;
+9. relancer les règles de réécriture si des CPT ou taxonomies ont changé ;
+10. vider les caches ;
+11. vérifier `dist/manifest.json`.
 
 Ne pas laisser WordPress actif sur un dossier renommé du type :
 
@@ -818,8 +842,11 @@ Après déploiement :
 - vérifier que le HTML charge `/themes/tealforge/dist/...` ;
 - vérifier que `dist/manifest.json` répond sans 403 ;
 - vérifier que les fichiers compilés répondent en 200 ;
+- exécuter `wp acf json status` et `wp acf json sync --dry-run` ;
+- synchroniser les JSON ACF si des champs, CPT ou taxonomies sont en attente ;
+- exécuter `wp rewrite flush --hard` si des CPT ou taxonomies ont changé ;
 - vider le cache WordPress et les caches de plugin ;
-- synchroniser/importer ACF JSON si nécessaire.
+- ne pas éditer une page tant que les champs ACF attendus ne sont pas visibles.
 
 Toute correction effectuée exceptionnellement sur un serveur distant doit être
 reportée dans le dépôt local.

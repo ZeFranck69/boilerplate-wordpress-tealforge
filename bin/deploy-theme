@@ -65,9 +65,17 @@ mv "$THEME_SLUG-new" "$THEME_SLUG"
 rm -rf "$THEME_SLUG-backup-temp"
 cd "$DEPLOY_WP_PATH"
 wp theme activate "$THEME_SLUG"
+wp acf json status
+wp acf json sync --dry-run
+wp acf json sync
+wp rewrite flush --hard
 wp cache flush
 
 4. Verifier ensuite :
 
 $DEPLOY_WP_PATH/wp-content/themes/$THEME_SLUG/dist/manifest.json
+
+Verifier aussi dans l'admin WordPress que les champs ACF attendus sont visibles
+avant toute sauvegarde de page. Si des CPT ou taxonomies ACF ont ete ajoutes,
+la synchronisation JSON et le flush des permaliens sont obligatoires.
 COMMANDS
