@@ -187,7 +187,33 @@ Sens recommande :
 dev/prod -> local
 ```
 
-## 4. Synchronisation ACF apres deploiement
+## 4. Reprise locale et renommage
+
+Si un projet issu du boilerplate est renomme en local, mettre a jour le nom du
+site WordPress, les URLs et le nom DDEV.
+
+Remplacer `NOM_PROJET` par le nouveau nom du projet :
+
+```bash
+ddev wp option update blogname "NOM_PROJET"
+ddev wp option update siteurl "https://NOM_PROJET.ddev.site"
+ddev wp option update home "https://NOM_PROJET.ddev.site"
+
+ddev stop
+ddev config --project-name=NOM_PROJET
+ddev start
+```
+
+Si le mot de passe admin local doit etre reinitialise :
+
+```bash
+ddev wp user update tf-admin --user_pass='admin'
+```
+
+Cette commande est reservee au local. Ne jamais utiliser de mot de passe faible
+sur un environnement distant ou en production.
+
+## 5. Synchronisation ACF apres deploiement
 
 Les definitions ACF versionnees dans `acf-json` ne mettent pas automatiquement la
 base de donnees distante a jour. Apres un deploiement qui ajoute ou modifie des
@@ -215,7 +241,7 @@ Si des CPT ou taxonomies ont ete ajoutes ou modifies, relancer les regles de
 reecriture avec `wp rewrite flush --hard`. Ne pas sauvegarder une page tant que
 les champs ACF attendus ne sont pas visibles dans l'admin.
 
-## 5. Structure du projet
+## 6. Structure du projet
 
 Structure principale :
 
@@ -246,7 +272,7 @@ web/wp-content/themes/tealforge/
 └── style.css
 ```
 
-## 6. Commandes build et Git
+## 7. Commandes build et Git
 
 Voir l'etat du projet :
 
@@ -289,7 +315,7 @@ commit.
 Le dossier `dist` du theme doit rester versionne pour permettre un deploiement
 sans Node.js sur le serveur.
 
-## 6. Acces SSH cPanel
+## 8. Acces SSH cPanel
 
 Pour un deploiement SSH via cPanel, creer de preference la cle SSH sur le poste
 local, puis importer uniquement la cle publique dans cPanel.
@@ -357,7 +383,7 @@ Il y a deux cas possibles :
 Si la connexion demande toujours le mot de passe cPanel alors qu'une cle SSH est
 prevue, verifier que la cle publique est bien importee puis autorisee dans cPanel.
 
-## 7. Push en dev/prod
+## 9. Push en dev/prod
 
 Le serveur distant ne doit pas etre la source du code.
 
@@ -396,9 +422,10 @@ Afficher les commandes de deploiement :
 bin/deploy-theme
 ```
 
-Le script `bin/deploy-theme` lit automatiquement `deploy.local.env` s'il existe.
-Il ne se connecte pas au serveur. Il affiche les commandes `scp`, `ssh` et les
-commandes serveur a executer.
+Le script `bin/deploy-theme` revient automatiquement a la racine du projet, puis
+lit `deploy.local.env` s'il existe. Il peut donc etre lance depuis la racine ou
+via son chemin absolu. Il ne se connecte pas au serveur. Il affiche les commandes
+`scp`, `ssh` et les commandes serveur a executer.
 
 Suivre les instructions affichees dans le terminal, dans l'ordre :
 
@@ -427,7 +454,7 @@ Apres deploiement :
 - vider les caches ;
 - synchroniser/importer les ACF JSON si necessaire.
 
-## 8. Documentation utile
+## 10. Documentation utile
 
 ```text
 docs/checklists/nouveau-projet.md
