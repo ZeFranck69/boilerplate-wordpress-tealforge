@@ -173,7 +173,32 @@ Templates spécifiques : page contact, archive chambres, single chambre
 - Taxonomies prévues :
 - Templates spécifiques :
 
-## 6. Contenus et données
+## 6. Modèle de données
+
+Avant le développement d'une fonctionnalité, lister les champs ACF, CPT et
+taxonomies concernés. Pour chaque élément, préciser son type et son usage.
+
+Exemple :
+
+```text
+Nom technique : chambre
+Type : CPT
+Slug : chambres
+Supports : title, editor, thumbnail
+Taxonomies : type_chambre
+URL publique : oui
+
+Nom technique : surface
+Type : number
+Emplacement : groupe ACF chambre
+Usage : affichage sur la fiche chambre
+Obligatoire : oui
+```
+
+Ne pas commencer l'intégration si un champ ou un type de contenu existant est
+ambigu. Faire valider le modèle avant de le créer ou de le renommer.
+
+## 7. Contenus et données
 
 Préciser d'où viennent les contenus et dans quel sens circulent les données.
 
@@ -203,7 +228,7 @@ Données à ne jamais écraser : utilisateurs client sur dev/prod.
 - Données de test nécessaires :
 - Données à ne jamais écraser :
 
-## 7. Déploiement
+## 8. Déploiement
 
 Décrire la cible et la méthode. Les secrets restent hors dépôt.
 

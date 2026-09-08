@@ -29,6 +29,9 @@ Avant de demarrer un projet, il faut :
 - un acces WordPress admin local ou distant selon le projet ;
 - un acces SSH serveur si un deploiement distant est prevu.
 
+Sous Windows, executer les scripts `bin/*` avec Git Bash ou WSL. Ils ne sont pas
+prevus pour PowerShell ou cmd natif.
+
 PHP, Composer, Node.js et WP-CLI doivent etre utilises via DDEV.
 
 ## 2. Installation des prerequis
@@ -187,7 +190,49 @@ Sens recommande :
 dev/prod -> local
 ```
 
-## 4. Reprise locale et renommage
+## 4. Reprise d'un projet existant
+
+Lorsqu'un projet a deja ete initialise avec ce boilerplate et pousse dans son
+propre depot, le nouveau developpeur clone le depot du projet. Il ne clone pas
+le boilerplate et ne reinstalle pas WordPress.
+
+Depuis `~/Sites` :
+
+```bash
+cd ~/Sites
+git clone git@github.com:ORGANISATION/NOM_PROJET.git
+cd NOM_PROJET
+ddev start
+```
+
+Le code du projet, le theme, les fichiers ACF JSON et les assets versionnes sont
+recuperes par Git. Les dependances locales ne sont pas versionnees et doivent
+etre installees dans le theme :
+
+```bash
+ddev composer --working-dir=/var/www/html/web/wp-content/themes/tealforge install
+ddev npm --prefix /var/www/html/web/wp-content/themes/tealforge install
+bin/build
+```
+
+La base de donnees WordPress, les medias, les plugins tiers et les reglages ne
+sont pas recuperes par Git. Il faut donc demander une sauvegarde ou un acces a
+l'environnement de reference, puis importer la base et les medias avec WPvivid.
+
+Apres l'import, verifier au minimum :
+
+- l'URL locale et les permaliens ;
+- les utilisateurs et les roles ;
+- les pages, menus et contenus ;
+- les groupes et les valeurs ACF ;
+- les formulaires WPForms ;
+- le theme actif et le chargement des assets.
+
+Chaque developpeur doit egalement disposer de ses propres acces Git et SSH. Une
+cle SSH personnelle doit etre ajoutee au fournisseur Git et, si necessaire, au
+cPanel du serveur. Ne jamais partager une cle privee existante.
+
+## 5. Reprise locale et renommage
 
 Si un projet issu du boilerplate est renomme en local, mettre a jour le nom du
 site WordPress, les URLs et le nom DDEV.

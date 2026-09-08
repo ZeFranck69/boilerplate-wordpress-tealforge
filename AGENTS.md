@@ -89,6 +89,21 @@ Travailler uniquement sur la tâche explicitement demandée.
 Le développement doit avancer section par section à partir d'une maquette, d'une
 capture ou d'une demande validée.
 
+Avant de commencer à développer, même si la demande invite à coder directement :
+
+1. lire `PROJECT.md` et vérifier le dossier courant ainsi que le nom DDEV ;
+2. rechercher les groupes ACF JSON, les CPT, les taxonomies et les champs déjà
+   existants qui peuvent être concernés ;
+3. définir les nouveaux champs et contenus dans une fiche de modèle de données ;
+4. indiquer pour chaque élément son nom technique, son type, son emplacement,
+   son usage et son template prévu ;
+5. signaler les incohérences ou informations manquantes avant de créer un nouveau
+   champ, CPT ou taxonomie.
+
+Cette vérification est obligatoire pour Codex, Claude Code et tout autre agent IA.
+Un agent ne doit pas créer un champ ou un type de contenu uniquement parce que la
+demande ne précise pas encore le modèle de données.
+
 Toujours créer une page WordPress pour porter le contenu, même lorsqu'il s'agit
 d'une onepage. Le rendu doit être construit avec des sections administrables,
 principalement via ACF Flexible Content, et non comme une page statique codée en
@@ -323,6 +338,17 @@ views/
 └── sections/
 ```
 
+Responsabilités des dossiers :
+
+- `sections/` : bloc administrable ACF Flexible Content, généralement pleine
+  largeur et utilisé à un seul niveau dans une page ;
+- `components/` : brique réutilisable non administrable seule, comme un bouton,
+  une carte ou un badge ;
+- `partials/` : inclusion structurelle fixe, comme le header, le footer ou la
+  navigation ;
+- `pages/` : rendu Twig associé à une page ou à un template WordPress ;
+- `layouts/` : structure HTML globale partagée.
+
 ---
 
 ## 9. ACF Pro
@@ -341,6 +367,22 @@ page_sections
 ```
 
 Si un projet utilise un autre nom, l'indiquer dans `PROJECT.md`.
+
+### Fiche préalable des champs et contenus
+
+Avant toute création ou modification de modèle de contenu, documenter au minimum :
+
+```text
+Nom technique | Objet | Type | Emplacement | Obligatoire | Usage | Template
+```
+
+Exemples de types : `text`, `textarea`, `wysiwyg`, `image`, `url`, `link`,
+`true_false`, `select`, `relationship`, `repeater`, `flexible_content`, `CPT` ou
+`taxonomie`.
+
+Vérifier d'abord qu'un champ portant le même rôle n'existe pas déjà. Ne jamais
+renommer ou réutiliser un champ existant pour un autre usage sans migration
+validée.
 
 ### Création d'une page one-page ACF
 
@@ -365,7 +407,15 @@ Règles ACF :
 - ne pas renommer un champ existant après saisie de contenu sans migration ;
 - ne pas imbriquer plusieurs Flexible Content ;
 - éviter les répéteurs volumineux ou imbriqués ;
-- utiliser des Custom Post Types pour les collections importantes ;
+- utiliser un CPT lorsqu'au moins un critère s'applique :
+  - l'élément possède sa propre URL ou fiche ;
+  - il doit être filtrable, triable ou paginé ;
+  - il est référencé depuis plusieurs pages ;
+  - il possède des métadonnées SEO propres ;
+  - le nombre d'éléments peut dépasser une dizaine ou n'est pas fixé ;
+- utiliser un répéteur uniquement pour un contenu propre à une seule page, en
+  petit nombre et sans filtrage, tri ni lien individuel ;
+- en cas d'ambiguïté entre CPT et répéteur, demander confirmation avant de coder ;
 - mutualiser les réglages communs lorsque cela est pertinent ;
 - ne pas permettre la saisie libre de classes CSS ;
 - préférer des choix contrôlés pour les variantes visuelles ;
@@ -394,6 +444,25 @@ Après un déploiement qui modifie `acf-json` :
 7. si des CPT ou taxonomies ACF ont été ajoutés, synchroniser aussi les types
    concernés puis relancer les règles de réécriture ;
 8. ne jamais sauvegarder une page si des champs ACF attendus sont manquants.
+
+### Création d'un CPT
+
+Lorsqu'un nouveau contenu mérite un CPT :
+
+1. vérifier dans `PROJECT.md` et dans le code qu'il n'existe pas déjà ;
+2. documenter son nom technique, son type, son slug, ses supports, ses taxonomies
+   et son exposition REST ;
+3. enregistrer le CPT dans `inc/post-types.php`, à créer uniquement si nécessaire ;
+4. créer le groupe ACF associé et sa règle d'emplacement dans `acf-json` ;
+5. créer `single-{cpt}.php`, `archive-{cpt}.php` et les vues Twig associées si le
+   contenu possède une URL publique ;
+6. vider les règles de réécriture ;
+7. vérifier l'affichage public, la sauvegarde dans l'administration et REST JSON.
+
+Pour un contenu destiné au filtrage, au tri ou au regroupement, utiliser une
+taxonomie WordPress plutôt qu'un champ ACF `select`, `checkbox` ou `radio`. Les
+champs ACF restent adaptés aux données d'affichage et aux propriétés propres à un
+contenu. En cas de doute sur le volume ou l'usage futur, demander confirmation.
 
 Commandes serveur recommandées après déploiement de JSON ACF :
 
@@ -465,6 +534,16 @@ Ne développer que la section demandée.
 ## 11. CSS et BEM
 
 Utiliser BEM avec le préfixe `tf-`.
+
+Les tokens visuels doivent être déclarés dans :
+
+```text
+assets/styles/tokens.css
+```
+
+Les sections doivent réutiliser ces variables pour les couleurs, la typographie,
+les espacements et les dimensions communes. Ne pas coder ces valeurs en dur dans
+une section sans raison documentée.
 
 Exemple :
 
@@ -596,6 +675,10 @@ Pour les images :
 - conserver le lazy loading hors élément principal ;
 - ne pas appliquer de lazy loading à l'image principale LCP ;
 - éviter d'afficher directement les fichiers originaux surdimensionnés.
+
+Pour les tailles d'image personnalisées, utiliser le préfixe `tealforge_` et les
+déclarer centralement dans `inc/setup.php`, par exemple `tealforge_card`,
+`tealforge_hero` et `tealforge_thumbnail`.
 
 ---
 
@@ -747,6 +830,10 @@ Avant de considérer une tâche terminée :
 6. contrôler les erreurs PHP ou JavaScript si disponibles ;
 7. tester la section concernée en desktop et mobile lorsque pertinent ;
 8. vérifier les cas où les champs optionnels sont vides.
+
+Si un nouveau champ ACF, CPT ou taxonomie a été créé, vérifier également que son
+nom technique, son type, sa localisation et son usage correspondent à la fiche de
+modèle de données validée.
 
 Commande minimale :
 

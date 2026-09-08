@@ -1,12 +1,4 @@
-:root {
-  --tf-color-text: #111111;
-  --tf-color-muted: #6f6f6f;
-  --tf-color-border: #dddddd;
-  --tf-color-surface: #f7f7f7;
-  --tf-color-background: #ffffff;
-  --tf-font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --tf-container: min(1120px, calc(100vw - 40px));
-}
+@import './tokens.css';
 
 *,
 *::before,
