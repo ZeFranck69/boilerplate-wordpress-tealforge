@@ -522,6 +522,7 @@ Apres deploiement :
 
 ```text
 docs/checklists/nouveau-projet.md
+docs/checklists/recette-production.md
 docs/architecture-theme.md
 docs/creer-section.md
 docs/depannage.md

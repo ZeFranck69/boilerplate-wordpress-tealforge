@@ -344,6 +344,16 @@ PHP ou npm ne sont pas disponibles sur le poste. Elle ne deploye jamais en produ
 Les tests de recette, les tests avec donnees client et les controles visuels
 restent manuels ou necessitent un environnement de test dedie.
 
+La recette est documentee dans :
+
+```text
+docs/checklists/recette-production.md
+```
+
+Elle constitue la definition de termine avant production et complete la CI avec
+les controles WordPress, contenus, comptes, formulaires, securite, responsive,
+emails, caches et assets.
+
 ## 13. Securisation d'un projet
 
 La securite ne repose pas uniquement sur AIOS. Elle doit etre verifiee a trois

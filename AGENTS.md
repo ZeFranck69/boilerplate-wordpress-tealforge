@@ -869,6 +869,16 @@ Les tests dépendants d'une base de données, de plugins sous licence, de WPvivi
 d'un serveur distant ou de données client restent des tests de recette. Ils ne
 doivent pas être ajoutés à la CI sans environnement de test dédié.
 
+La recette avant production doit suivre la checklist suivante :
+
+```text
+docs/checklists/recette-production.md
+```
+
+La CI verte ne suffit pas à valider une mise en production. La recette humaine
+doit aussi couvrir les contenus, les plugins, les comptes, les formulaires, les
+endpoints, la sécurité, le responsive, les emails, les caches et les assets.
+
 Les configurations fournies sont compatibles avec GitHub Actions et GitLab CI :
 
 ```text
