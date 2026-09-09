@@ -18,6 +18,9 @@ Le depot contient le socle du projet, le theme et les scripts de workflow.
 La base de donnees, les medias, les plugins tiers et les secrets ne sont pas
 versionnes.
 
+Pour une presentation technique detaillee du socle et de son fonctionnement,
+consulter [docs/presentation-boilerplate.md](docs/presentation-boilerplate.md).
+
 ## 1. Prerequis
 
 Avant de demarrer un projet, il faut :
@@ -360,6 +363,22 @@ commit.
 Le dossier `dist` du theme doit rester versionne pour permettre un deploiement
 sans Node.js sur le serveur.
 
+### Verification CI locale
+
+La verification utilisee par GitHub Actions et GitLab CI peut aussi etre lancee
+localement. Si PHP ou npm ne sont pas installes sur le poste, le script utilise
+les outils fournis par DDEV lorsque le projet est demarre.
+
+```bash
+bin/ci-check
+```
+
+Elle controle le diff Git, la syntaxe PHP du theme, installe proprement les
+dependances npm, lance le build Vite et verifie `dist/manifest.json`.
+
+La CI ne deploye rien et ne remplace pas la recette WordPress avec la base, les
+plugins et les donnees du projet.
+
 ## 8. Acces SSH cPanel
 
 Pour un deploiement SSH via cPanel, creer de preference la cle SSH sur le poste
@@ -506,8 +525,13 @@ docs/checklists/nouveau-projet.md
 docs/architecture-theme.md
 docs/creer-section.md
 docs/depannage.md
+docs/presentation-boilerplate.md
+docs/evolution-boilerplate.md
 ```
 
-`AGENTS.md` contient les consignes generales pour Codex.
+`AGENTS.md` contient les consignes generales pour Codex, Claude Code et les autres
+agents IA.
+
+`CLAUDE.md` est le point d'entree de Claude Code et renvoie vers `AGENTS.md`.
 
 `PROJECT.md` contient les informations propres au projet courant.

@@ -14,6 +14,11 @@
 !.env.example
 deploy.local.env
 
+# DDEV files generated locally. Keep only the project configuration.
+.ddev/*
+!.ddev/.gitignore
+!.ddev/config.yaml
+
 # WordPress local/runtime files
 web/wp-config.php
 web/wp-content/uploads/

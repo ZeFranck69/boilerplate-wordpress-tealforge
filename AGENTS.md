@@ -816,6 +816,11 @@ sur le poste hôte.
 Le boilerplate peut proposer des scripts simplifiés dans `bin/` ou `package.json`,
 mais les scripts doivent rester explicites et documentés dans `README.md`.
 
+La CI utilise `bin/ci-check`. Ce script ne dépend pas de DDEV : il vérifie
+`git diff --check`, la syntaxe PHP, les dépendances npm, le build Vite et la
+présence de `dist/manifest.json`. Il ne déploie rien et ne contacte aucun serveur
+distant.
+
 ---
 
 ## 20. Contrôles avant validation
@@ -849,6 +854,31 @@ ddev exec php -l /var/www/html/chemin/du/fichier.php
 
 Ne pas créer de commit sauf demande explicite.
 
+### CI
+
+La CI est un contrôle de qualité, pas un système de déploiement. Elle doit rester
+limitée aux vérifications reproductibles :
+
+- format du diff Git ;
+- syntaxe PHP du thème ;
+- installation propre des dépendances npm ;
+- build Vite ;
+- présence d'un manifest valide.
+
+Les tests dépendants d'une base de données, de plugins sous licence, de WPvivid,
+d'un serveur distant ou de données client restent des tests de recette. Ils ne
+doivent pas être ajoutés à la CI sans environnement de test dédié.
+
+Les configurations fournies sont compatibles avec GitHub Actions et GitLab CI :
+
+```text
+.github/workflows/quality.yml
+.gitlab-ci.yml
+```
+
+Activer une seule plateforme CI par dépôt et ne jamais ajouter de secrets de
+production dans les variables CI pour cette vérification minimale.
+
 ---
 
 ## 21. Git
@@ -878,6 +908,36 @@ bin/deploy-theme
 ```
 
 Le détail de ces scripts appartient au `README.md`.
+
+### Evolution du boilerplate
+
+Après l'initialisation d'un projet, son dépôt devient autonome. Une évolution du
+boilerplate ne doit jamais être fusionnée automatiquement dans un projet client.
+
+Pour étudier une mise à jour dans un projet existant :
+
+1. vérifier le statut du dépôt et identifier les modifications locales ;
+2. faire un backup si la base ou les médias ne sont pas récupérables ;
+3. ajouter le boilerplate comme remote secondaire nommé `boilerplate` ;
+4. exécuter `git fetch boilerplate` ;
+5. comparer les commits et uniquement les fichiers concernés ;
+6. créer une branche de test ;
+7. intégrer uniquement les commits autonomes et compatibles, généralement avec
+   `git cherry-pick` ;
+8. tester le build, PHP, ACF, les CPT, les taxonomies et les templates concernés ;
+9. faire relire puis merger dans `main` seulement après validation.
+
+Ne pas utiliser `git merge boilerplate/main` ou `git rebase boilerplate/main` sans
+analyse préalable. Une mise à jour qui modifie un champ ACF, un CPT, une taxonomie,
+une dépendance ou l'architecture du thème doit être accompagnée d'une migration et
+d'un backup. Les adaptations métier du projet client restent prioritaires sur le
+code générique du boilerplate.
+
+La procédure complète est documentée dans :
+
+```text
+docs/evolution-boilerplate.md
+```
 
 ---
 
