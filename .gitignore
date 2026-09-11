@@ -29,6 +29,7 @@ web/wp-content/wpvivid_staging/
 web/wp-content/ai1wm-backups/
 web/wp-content/backups*/
 web/wp-content/debug.log
+web/wp-content/plugins/
 
 # Dependencies
 node_modules/
