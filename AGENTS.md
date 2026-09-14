@@ -353,12 +353,16 @@ Responsabilités des dossiers :
 
 ## 9. ACF Pro
 
-Les pages sont construites progressivement avec des sections ACF Flexible Content.
+Chaque page de contenu demandée doit exister comme une page WordPress et être
+composée avec le champ ACF Flexible Content principal, généralement
+`page_sections`. Cette règle s'applique aux sites one-page comme aux sites
+multipages : une one-page utilise une page WordPress contenant ses différentes
+sections ; un site avec une page Accueil et une page Contact utilise deux pages
+WordPress, chacune avec ses propres sections.
 
-Cette règle s'applique aussi aux onepages : créer une page WordPress, puis
-composer son contenu avec le Flexible Content principal. Ne pas coder directement
-toute une onepage dans `front-page.php`, `page.php` ou un template Twig sans
-champs administrables, sauf validation explicite.
+Ne pas coder le contenu d'une page directement dans `front-page.php`, `page.php`
+ou un template Twig sans contenu administrable, sauf validation explicite. Pour
+l'accueil, créer la page WordPress et la définir comme page d'accueil statique.
 
 Champ principal recommandé :
 
@@ -384,22 +388,25 @@ Vérifier d'abord qu'un champ portant le même rôle n'existe pas déjà. Ne jam
 renommer ou réutiliser un champ existant pour un autre usage sans migration
 validée.
 
-### Création d'une page one-page ACF
+### Création et intégration d'une page ACF
 
-Quand une demande concerne l'intégration d'une page one-page administrable avec
-ACF :
+Pour chaque page de contenu demandée, qu'elle fasse partie d'un site one-page ou
+multipages :
 
 1. vérifier le dossier projet courant et le nom DDEV avant toute modification ;
-2. créer la page WordPress si elle n'existe pas ;
-3. définir cette page comme page d'accueil statique si la demande concerne
-   l'accueil ;
-4. créer ou synchroniser le groupe ACF JSON ;
-5. insérer les sections Flexible Content dans la page, pas seulement prévoir les
-   champs ;
-6. vérifier dans WordPress que `get_field('page_sections', ID_PAGE)` retourne les
-   layouts attendus ;
-7. vérifier que l'URL publique affiche la page et que l'admin peut sauvegarder
-   sans erreur REST JSON.
+2. vérifier les champs et groupes ACF existants, puis créer la page WordPress si
+   elle n'existe pas ;
+3. définir la page comme page d'accueil statique si elle porte l'accueil ;
+4. créer ou synchroniser le groupe ACF JSON nécessaire ;
+5. ajouter dans la page les valeurs et layouts Flexible Content attendus, pas
+   seulement les définitions de champs ;
+6. vérifier pour chaque page que `get_field('page_sections', ID_PAGE)` retourne
+   les layouts attendus ;
+7. vérifier l'URL publique de chaque page et sa sauvegarde dans l'admin, sans
+   erreur REST JSON.
+
+Une page prévue dans la maquette ne doit pas être remplacée par une ancre ou une
+section d'une autre page si elle doit avoir sa propre URL et son propre contenu.
 
 Règles ACF :
 
@@ -482,28 +489,15 @@ wp acf json sync --type=post-type
 wp acf json sync --type=taxonomy
 ```
 
-### Création d'une page one-page ACF
-
-Quand une demande concerne l'intégration d'une page one-page administrable avec
-ACF :
-
-1. vérifier le dossier projet courant et le nom DDEV avant toute modification ;
-2. créer la page WordPress si elle n'existe pas ;
-3. définir cette page comme page d'accueil statique si la demande concerne
-   l'accueil ;
-4. créer ou synchroniser le groupe ACF JSON ;
-5. insérer les sections Flexible Content dans la page, pas seulement prévoir les
-   champs ;
-6. vérifier dans WordPress que `get_field('page_sections', ID_PAGE)` retourne les
-   layouts attendus ;
-7. vérifier que l'URL publique affiche la page et que l'admin peut sauvegarder
-   sans erreur REST JSON.
-
 ---
 
 ## 10. Structure d'une section
 
 Chaque section doit avoir une responsabilité claire.
+
+Pour chaque section, garder le template et ses styles dans des fichiers dédiés.
+Créer un fichier JavaScript dédié uniquement si la section a un comportement
+interactif.
 
 Exemple :
 
@@ -528,12 +522,24 @@ Chaque section doit prendre en compte :
 - comportement dans l'administration ACF.
 
 Ne développer que la section demandée.
+Lors d'une nouvelle section ou d'une modification ciblée, ne pas déplacer tout
+le CSS/JavaScript existant : appliquer cette organisation progressivement, sauf
+demande explicite de refactorisation.
 
 ---
 
 ## 11. CSS et BEM
 
 Utiliser BEM avec le préfixe `tf-`.
+
+Organisation des styles :
+
+- `assets/styles/main.css` est l'entrée globale Vite : tokens, reset, styles de
+  base, typographie et éléments communs au site ;
+- chaque section possède son propre fichier `assets/styles/sections/<section>.css` ;
+- les styles spécifiques d'une section ne doivent pas être ajoutés directement
+  dans `main.css` ; importer les fichiers de section depuis l'entrée globale pour
+  qu'ils soient inclus dans le build.
 
 Les tokens visuels doivent être déclarés dans :
 
@@ -575,6 +581,19 @@ Règles :
 ## 12. JavaScript
 
 Utiliser JavaScript natif et modulaire par défaut.
+
+Organisation des scripts :
+
+- `assets/scripts/main.js` est l'entrée JavaScript Vite et charge `app.js` ;
+- `assets/scripts/app.js` contient l'initialisation et les comportements communs
+  au site ;
+- les comportements propres à une section vivent dans
+  `assets/scripts/sections/<section>.js` et sont chargés depuis l'entrée du site
+  uniquement lorsqu'ils sont utiles.
+
+Le build Vite peut regrouper ces sources en un seul fichier CSS et un seul fichier
+JavaScript de production : la séparation demandée concerne les fichiers source,
+pas nécessairement les fichiers livrés au navigateur.
 
 Règles :
 
