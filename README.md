@@ -245,6 +245,33 @@ Le dossier `dist/` doit rester versionne pour le deploiement.
 `bin/ci-check` verifie Git, PHP, les dependances npm, le build Vite et le
 manifest. Il peut utiliser DDEV si les outils ne sont pas installes sur le poste.
 
+### Recuperer les modifications d'un collegue
+
+Lorsqu'un collegue pousse une modification sur le depot du projet, recuperer ses
+changements depuis la branche `main` du projet :
+
+```bash
+cd ~/Sites/NOM_PROJET
+git status
+git pull --ff-only origin main
+```
+
+Le `git pull` concerne le depot du projet courant. Il ne faut pas remplacer le
+remote du projet par celui du boilerplate ni tirer automatiquement les
+modifications du boilerplate dans un projet deja personnalise.
+
+Si la nouvelle modification contient du CSS ou du JavaScript, reconstruire les
+assets :
+
+```bash
+bin/build
+ddev launch
+```
+
+S'il existe des modifications locales non commitees, les traiter avant le pull :
+les commiter ou les mettre de cote. En cas de conflit, ne pas utiliser de force
+push ; resoudre le conflit puis verifier le projet.
+
 ## Versionner les modifications
 
 Workflow Git classique :
