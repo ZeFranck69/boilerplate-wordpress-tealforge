@@ -49,6 +49,10 @@ NOM_PROJET/
 Le depot Git contient le code. La base de donnees, les medias, les plugins tiers,
 les sauvegardes et les secrets restent lies a chaque environnement.
 
+Dans `web/wp-content`, seul le theme custom est versionne. Les plugins sont
+installes manuellement dans chaque environnement et les plugins custom metier
+sont distribues separement sous forme de ZIP.
+
 ## 4. Stack technique
 
 ### Socle WordPress
@@ -218,23 +222,58 @@ Ils ne doivent pas installer WordPress, restaurer une base, modifier la producti
 installer un plugin ou deployer sans demande explicite. Chaque agent doit lire
 `AGENTS.md` puis `PROJECT.md` avant de modifier le code.
 
+Une validation humaine reste necessaire avant toute operation qui modifie un
+environnement, une base de donnees, un plugin, un serveur ou l'historique Git.
+Les agents produisent du code et des commandes ; ils ne remplacent ni la revue
+technique, ni la validation fonctionnelle, ni la validation de mise en production.
+
 ## 9. Workflow de creation d'un projet
 
 ### Initialisation
 
-1. creer le depot du projet ;
+1. creer le depot du projet, vide et sans README initial ;
 2. cloner le boilerplate dans `~/Sites/NOM_PROJET` ;
-3. remplacer le remote par celui du projet ;
+3. remplacer le remote du boilerplate par celui du projet ;
 4. copier `PROJECT.md.example` vers `PROJECT.md` ;
-5. renseigner le nom DDEV et les decisions du projet ;
-6. lancer DDEV ;
-7. installer WordPress dans `web/` ;
-8. installer les dependances du theme ;
-9. installer les plugins WordPress retenus ;
-10. importer la base et les medias de reference si un environnement distant
+5. renseigner le nom DDEV, les environnements et les decisions du projet ;
+6. demarrer Docker Desktop puis DDEV ;
+7. telecharger WordPress Core dans `web/` ;
+8. creer `wp-config.php` et installer WordPress ;
+9. installer les dependances Composer et npm du theme ;
+10. installer et activer les plugins WordPress retenus ;
+11. importer la base et les medias de reference si un environnement distant
     existe ;
-11. synchroniser les groupes ACF ;
-12. faire le premier commit et le premier push.
+12. synchroniser les groupes ACF et verifier les pages ;
+13. lancer les controles locaux ;
+14. faire le premier commit et le premier push.
+
+Commandes indicatives depuis la racine du projet :
+
+```bash
+cp PROJECT.md.example PROJECT.md
+# Adapter PROJECT.md et .ddev/config.yaml avant de continuer
+
+ddev start
+ddev wp core download --path=/var/www/html/web --locale=fr_FR --skip-content
+ddev wp config create \
+  --path=/var/www/html/web \
+  --dbname=db --dbuser=db --dbpass=db --dbhost=db
+ddev wp core install \
+  --path=/var/www/html/web \
+  --url=https://NOM_PROJET.ddev.site \
+  --title="NOM_PROJET" \
+  --admin_user=tf-admin \
+  --admin_password='MOT_DE_PASSE_LOCAL' \
+  --admin_email=dev@tealforge.local \
+  --skip-email
+
+ddev composer --working-dir=/var/www/html/web/wp-content/themes/tealforge install
+ddev npm --prefix /var/www/html/web/wp-content/themes/tealforge install
+bin/build
+```
+
+Les valeurs `NOM_PROJET` et `MOT_DE_PASSE_LOCAL` sont des exemples a remplacer.
+Docker Desktop doit etre demarre avant `ddev start`.
 
 ### Developpement
 
@@ -253,15 +292,43 @@ Le developpement avance fonctionnalite par fonctionnalite :
 
 ### Reprise par un collegue
 
-Un collegue clone le depot du projet, et non le boilerplate. Il ne reinstalle pas
-WordPress. Il lance DDEV, installe les dependances non versionnees et recupere la
-base de donnees et les medias via WPvivid.
+Un collegue clone le depot du projet, et non le boilerplate. Le depot ne contient
+ni WordPress Core, ni les plugins, ni la base de donnees, ni les medias. Il doit
+donc remettre en place l'environnement local avant de restaurer les donnees.
 
 ```bash
 git clone git@github.com:ORGANISATION/NOM_PROJET.git
 cd NOM_PROJET
 ddev start
+ddev wp core download --path=/var/www/html/web --locale=fr_FR --skip-content
+ddev wp config create \
+  --path=/var/www/html/web \
+  --dbname=db --dbuser=db --dbpass=db --dbhost=db
+ddev composer --working-dir=/var/www/html/web/wp-content/themes/tealforge install
+ddev npm --prefix /var/www/html/web/wp-content/themes/tealforge install
+bin/build
 ```
+
+Les plugins peuvent etre installes depuis le back-office ou recuperes depuis un
+environnement de confiance par FTP/FileZilla. Pour un plugin custom, utiliser
+l'archive validee du plugin et ne jamais le recreer dans le theme.
+
+Apres l'installation des plugins, importer la base et les medias de reference
+avec WPvivid, puis verifier les utilisateurs, pages, menus, formulaires, champs
+ACF et theme actif. Ne pas lancer `wp core install` avant l'import d'une base
+existante : cette commande sert a initialiser un nouveau WordPress vide.
+
+Pour recuperer une modification poussee par un collegue :
+
+```bash
+git status
+git pull --ff-only origin main
+bin/build
+```
+
+Le `pull` concerne le depot du projet courant. Il ne faut pas remplacer son
+remote par celui du boilerplate ni tirer automatiquement le boilerplate dans un
+projet personnalise.
 
 Chaque developpeur utilise ses propres acces Git et sa propre cle SSH. Les secrets
 ne sont jamais transmis dans Git ou dans `PROJECT.md`.
@@ -298,6 +365,69 @@ assets compiles. Il ne versionne pas :
 - `node_modules` et `vendor` ;
 - les fichiers temporaires WPvivid.
 
+### Workflow Git quotidien
+
+Avant de commencer :
+
+```bash
+git status
+git pull --ff-only origin main
+```
+
+Apres une modification :
+
+```bash
+bin/ci-check
+git diff --check
+git status
+git add .
+git commit -m "Decrit la modification"
+git push origin main
+```
+
+Le `git add .` reste acceptable si le `.gitignore` est controle. Avant le commit,
+verifier tout de meme `git status` pour eviter d'ajouter un export, une archive,
+un fichier de configuration ou une sauvegarde.
+
+Les modifications du boilerplate ne sont pas tirees automatiquement dans les
+projets. Elles sont comparees puis appliquees de maniere selective, fichier par
+fichier ou commit par commit, afin de preserver les personnalisations du client.
+Consulter [evolution-boilerplate.md](evolution-boilerplate.md).
+
+### Strategie de backup
+
+Un backup est obligatoire avant :
+
+- une restauration WPvivid ;
+- une migration de base ou de medias ;
+- une mise a jour importante de WordPress ou d'un plugin ;
+- une synchronisation ACF qui modifie le modele de donnees ;
+- un deploiement de production ;
+- une operation de nettoyage ou de suppression.
+
+Avec WPvivid, verifier avant l'operation :
+
+1. l'environnement source et l'environnement cible ;
+2. le sens de migration, par exemple `dev/prod -> local` ;
+3. la presence de la base, des medias et des fichiers necessaires ;
+4. la date et l'emplacement de la sauvegarde ;
+5. la possibilite de restaurer cette sauvegarde.
+
+Une sauvegarde ne remplace pas le versionnement du code. Elle couvre les donnees
+WordPress, tandis que Git couvre le theme et les fichiers du projet. Ne jamais
+committer une sauvegarde WPvivid, un export SQL ou le dossier `uploads`.
+
+Apres une restauration, verifier :
+
+- l'URL et les permaliens locaux ;
+- les utilisateurs et roles ;
+- les pages, menus et options ;
+- les groupes et valeurs ACF ;
+- les formulaires et leurs notifications ;
+- les plugins actifs et leurs reglages ;
+- les medias et les URLs internes ;
+- les caches et les erreurs PHP.
+
 Avant un deploiement :
 
 1. faire un backup de l'environnement cible ;
@@ -313,6 +443,67 @@ Avant un deploiement :
 
 Le deploiement reste manuel et valide par un humain. Aucun push Git ne doit
 deployer automatiquement en production.
+
+Commandes locales de preparation :
+
+```bash
+bin/ci-check
+bin/build
+test -f web/wp-content/themes/tealforge/dist/manifest.json
+bin/deploy-theme
+```
+
+`bin/deploy-theme` ne se connecte pas automatiquement au serveur. Il prepare
+l'archive du theme et affiche les commandes `scp`, `ssh` et serveur a executer.
+Le theme actif garde toujours le slug `tealforge`. Les plugins, WordPress Core,
+les medias et `wp-config.php` ne font pas partie de cette archive.
+
+### Deploiement distant et SSH
+
+Le fichier local `deploy.local.env` contient les parametres propres a
+l'environnement et reste ignore par Git :
+
+```text
+THEME_SLUG="tealforge"
+DEPLOY_HOST="serveur.example.com"
+DEPLOY_PORT="22"
+DEPLOY_USER="utilisateur"
+DEPLOY_WP_PATH="/home/utilisateur/public_html"
+DEPLOY_SSH_KEY="/Users/utilisateur/.ssh/id_ed25519_projet"
+```
+
+Un acces SSH se compose de deux elements :
+
+- la cle privee reste sur le poste du developpeur ;
+- la cle publique est ajoutee et autorisee chez l'hebergeur ou dans cPanel.
+
+Le script affiche ensuite les operations a controler et executer manuellement :
+transfert de l'archive, backup distant, remplacement du theme, permissions,
+synchronisation ACF, purge des caches et verification HTTP.
+
+Si SSH demande `Enter passphrase for key`, saisir la phrase secrete de la cle
+locale. Si SSH demande `USER@HOST's password`, saisir le mot de passe du compte
+SSH/cPanel fourni par l'hebergeur.
+
+### Ordre recommande de mise en production
+
+```text
+backup de la cible
+-> verification du commit et du build local
+-> creation de l'archive du theme
+-> transfert SCP
+-> extraction dans un dossier temporaire
+-> remplacement du theme tealforge
+-> permissions 755/644
+-> activation du theme
+-> synchronisation ACF si necessaire
+-> purge des caches
+-> controles fonctionnels et visuels
+```
+
+Une correction urgente realisee directement sur un serveur doit etre reportee
+dans le depot local, puis committee et poussee. Le serveur ne doit jamais devenir
+la source principale du code.
 
 ## 12. CI et controles automatises
 

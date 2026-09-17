@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+BOILERPLATE_REMOTE="${BOILERPLATE_REMOTE:-boilerplate}"
+BOILERPLATE_URL="${BOILERPLATE_URL:-https://github.com/ZeFranck69/boilerplate-wordpress-tealforge.git}"
+BOILERPLATE_REF="${BOILERPLATE_REF:-main}"
+UPDATE_BRANCH="${UPDATE_BRANCH:-chore/update-boilerplate}"
+
+cd "$PROJECT_ROOT"
+
+if [ -n "$(git status --porcelain)" ]; then
+  echo "Le depot contient des modifications locales."
+  echo "Commitez-les ou mettez-les de cote avant de lancer cette mise a jour."
+  git status --short
+  exit 1
+fi
+
+if git remote get-url "$BOILERPLATE_REMOTE" >/dev/null 2>&1; then
+  echo "Remote boilerplate existant : $BOILERPLATE_REMOTE"
+else
+  git remote add "$BOILERPLATE_REMOTE" "$BOILERPLATE_URL"
+  echo "Remote boilerplate ajoute : $BOILERPLATE_URL"
+fi
+
+echo "Recuperation du boilerplate..."
+git fetch "$BOILERPLATE_REMOTE" "$BOILERPLATE_REF":refs/remotes/$BOILERPLATE_REMOTE/$BOILERPLATE_REF
+
+if [ "$(git branch --show-current)" != "$UPDATE_BRANCH" ]; then
+  if git show-ref --verify --quiet "refs/heads/$UPDATE_BRANCH"; then
+    git switch "$UPDATE_BRANCH"
+  else
+    git switch -c "$UPDATE_BRANCH"
+  fi
+fi
+
+FILES=(
+  README.md
+  AGENTS.md
+  CLAUDE.md
+  .github/workflows/quality.yml
+  .gitlab-ci.yml
+  bin/ci-check
+  docs/architecture-theme.md
+  docs/checklists/nouveau-projet.md
+  docs/checklists/recette-production.md
+  docs/creer-section.md
+  docs/depannage.md
+  docs/images/cpanel-import-cle-ssh.png
+  docs/presentation-boilerplate.md
+)
+
+echo "Synchronisation des fichiers generiques :"
+for file in "${FILES[@]}"; do
+  if git cat-file -e "$BOILERPLATE_REMOTE/$BOILERPLATE_REF:$file" 2>/dev/null; then
+    git restore --source="$BOILERPLATE_REMOTE/$BOILERPLATE_REF" -- "$file"
+    echo "OK $file"
+  else
+    echo "Ignore absent du boilerplate : $file"
+  fi
+done
+
+chmod +x bin/ci-check
+
+cat <<'SUMMARY'
+
+Mise a jour preparee.
+Les fichiers ont ete synchronises sur la branche de travail.
+Le theme, PROJECT.md, les plugins, les medias et la base de donnees n'ont pas ete modifies.
+
+A verifier avant commit :
+  git diff --check
+  git diff --stat
+  git status
+  bin/ci-check
+
+Puis, apres validation :
+  git add .
+  git commit -m "Met a jour le socle boilerplate Tealforge"
+  git push -u origin chore/update-boilerplate
+SUMMARY

@@ -218,6 +218,28 @@ Verifier les utilisateurs, pages, menus, ACF, formulaires, medias et theme actif
 Chaque developpeur doit utiliser ses propres acces Git et sa propre cle SSH.
 La procedure cPanel est decrite dans la documentation du projet.
 
+### Mettre a jour le socle d'un projet existant
+
+Pour preparer une mise a jour du boilerplate dans un projet deja personnalise,
+utiliser le script depuis la racine du projet :
+
+```bash
+bin/update-boilerplate
+```
+
+Le script :
+
+1. verifie que le depot ne contient pas de modifications locales non commitees ;
+2. ajoute le remote `boilerplate` s'il n'existe pas ;
+3. recupere la branche `main` du boilerplate ;
+4. cree ou utilise la branche `chore/update-boilerplate` ;
+5. synchronise uniquement les fichiers generiques du socle ;
+6. affiche les controles a effectuer avant le commit.
+
+Il ne modifie pas le theme du projet, `PROJECT.md`, les plugins, les medias, la
+base de donnees ou `docs/evolution-boilerplate.md`. Le diff doit etre relu avant
+de lancer les commandes de commit et de push affichees par le script.
+
 ## Developper et builder
 
 Le theme se trouve dans :
