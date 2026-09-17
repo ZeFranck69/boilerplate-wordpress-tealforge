@@ -238,7 +238,44 @@ Le script :
 
 Il ne modifie pas le theme du projet, `PROJECT.md`, les plugins, les medias, la
 base de donnees ou `docs/evolution-boilerplate.md`. Le diff doit etre relu avant
-de lancer les commandes de commit et de push affichees par le script.
+de poursuivre.
+
+#### Apres l'execution du script
+
+Le script ne committe et ne pousse rien automatiquement. Depuis la branche creee
+par le script :
+
+```bash
+git diff --check
+git diff --stat
+git status
+bin/ci-check
+```
+
+Si le diff est correct et que les controles passent :
+
+```bash
+git add .
+git commit -m "Met a jour le socle boilerplate Tealforge"
+git push -u origin chore/update-boilerplate
+```
+
+Ensuite, ouvrir une Pull Request ou une Merge Request de
+`chore/update-boilerplate` vers `main`. Relire le diff, verifier la CI, puis
+fusionner la demande.
+
+Apres la fusion, mettre le clone local a jour :
+
+```bash
+git switch main
+git pull --ff-only origin main
+```
+
+La mise a jour est alors terminee. La branche de travail peut etre supprimee
+depuis GitHub ou GitLab, puis localement si elle n'est plus necessaire.
+
+Si le script signale des modifications locales, ne pas les supprimer : les
+committer ou les mettre de cote avant de relancer la procedure.
 
 ## Developper et builder
 

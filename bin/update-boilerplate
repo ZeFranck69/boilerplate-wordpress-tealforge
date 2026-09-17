@@ -76,7 +76,18 @@ A verifier avant commit :
   bin/ci-check
 
 Puis, apres validation :
+  git diff --check
+  bin/ci-check
   git add .
   git commit -m "Met a jour le socle boilerplate Tealforge"
-  git push -u origin chore/update-boilerplate
+  git push -u origin $UPDATE_BRANCH
+
+Ensuite, dans GitHub ou GitLab :
+  1. ouvrir une Pull Request ou Merge Request vers main ;
+  2. verifier la CI et relire le diff ;
+  3. fusionner la demande ;
+
+Apres la fusion, revenir sur main :
+  git switch main
+  git pull --ff-only origin main
 SUMMARY
